@@ -32,17 +32,37 @@ class Castel
 {
     protected $values;
 
+    /**
+     * Instantiate the container
+     *
+     * @param array $values
+     */
     public function __construct(array $values = [])
     {
         $this->values = $values;
     }
 
+    /**
+     * Sets a parameter or an object
+     *
+     * @param string $id
+     * @param mixed $value
+     * @return \Castel
+     */
     public function share($id, $value)
     {
         $this->values[$id] = $value;
         return $this;
     }
 
+    /**
+     * Extends an object definition
+     *
+     * @param string $id
+     * @param Closure $callable
+     * @return \Castel
+     * @throws InvalidArgumentException
+     */
     public function extend($id, Closure $callable)
     {
         if (property_exists($this, $id)) {
@@ -52,24 +72,37 @@ class Castel
             throw new InvalidArgumentException(sprintf('Identifier "%s" is undefined.', $id));
         }
         $parent = $this->values[$id];
-        return $this->share($id, function ($that) use ($callable, $parent) {
+        $this->values[$id] = function ($that) use ($callable, $parent) {
             return $callable($this->mutate($parent), $that);
-        });
+        };
+        return $this;
     }
 
+    /**
+     * Gets a parameter or an object
+     *
+     * @param string $id
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
     public function __get($id)
     {
         if (!array_key_exists($id, $this->values)) {
             throw new InvalidArgumentException(sprintf('Identifier "%s" is undefined.', $id));
         }
-
         return $this->$id = $this->mutate($this->values[$id]);
     }
 
-    private function mutate($value)
+    /**
+     * Tries to invoke a value
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function &mutate(&$value)
     {
         if (is_callable($value)) {
-            return $value($this);
+            $value = $value($this);
         }
         return $value;
     }
