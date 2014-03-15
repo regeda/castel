@@ -118,4 +118,13 @@ class CastelTest extends \PHPUnit_Framework_TestCase
         });
         $this->assertSame('To be or not to be!', $castel->foo);
     }
+
+    public function testNewShareAfterMutation()
+    {
+        $castel = new Castel();
+        $castel->share('foo', 'bar');
+        $castel->foo; // <---- mutation
+        $castel->share('foo', 'baz');
+        $this->assertSame('bar', $castel->foo);
+    }
 }
