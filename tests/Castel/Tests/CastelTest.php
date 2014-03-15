@@ -38,13 +38,25 @@ class CastelTest extends \PHPUnit_Framework_TestCase
         $castel->something;
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Identifier "foo" is already mutated
+     */
+    public function testFailedSharingAfterMutation()
+    {
+        $castel = new Castel();
+        $castel->share('foo', 'bar');
+        $castel->foo; // <---- mutation
+        $castel->share('foo', 'baz');
+    }
+
     public function provideBarSharing()
     {
-        return [
-            ['bar'],
-            [function() { return 'bar';}],
-            [new Invokable('bar')]
-        ];
+        return array(
+            array('bar'),
+            array(function() { return 'bar';}),
+            array(new Invokable('bar'))
+        );
     }
 
     /**
@@ -117,14 +129,5 @@ class CastelTest extends \PHPUnit_Framework_TestCase
             return $value.'not to be!';
         });
         $this->assertSame('To be or not to be!', $castel->foo);
-    }
-
-    public function testNewShareAfterMutation()
-    {
-        $castel = new Castel();
-        $castel->share('foo', 'bar');
-        $castel->foo; // <---- mutation
-        $castel->share('foo', 'baz');
-        $this->assertSame('bar', $castel->foo);
     }
 }
