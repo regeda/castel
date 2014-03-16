@@ -74,7 +74,7 @@ class Castel
         }
         $parent = $this->values[$id];
         $this->values[$id] = function ($that) use ($callable, $parent) {
-            return $callable($that->mutate($parent), $that);
+            return $callable(self::mutate($parent, $that), $that);
         };
         if (property_exists($this, $id)) {
             $this->$id = $callable($this->$id, $this);
@@ -94,7 +94,7 @@ class Castel
         if (!isset($this->values[$id])) {
             throw new InvalidArgumentException(sprintf('Identifier "%s" is undefined.', $id));
         }
-        return $this->$id = $this->mutate($this->values[$id]);
+        return $this->$id = self::mutate($this->values[$id], $this);
     }
 
     /**
@@ -103,10 +103,10 @@ class Castel
      * @param mixed $value
      * @return mixed
      */
-    private function &mutate(&$value)
+    public static function &mutate(&$value, $context)
     {
         if (is_callable($value)) {
-            $value = $value($this);
+            $value = $value($context);
         }
         return $value;
     }
