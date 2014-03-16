@@ -74,7 +74,7 @@ class Castel
         }
         $parent = $this->values[$id];
         $this->values[$id] = function ($that) use ($callable, $parent) {
-            return $callable($this->mutate($parent), $that);
+            return $callable($that->mutate($parent), $that);
         };
         if (property_exists($this, $id)) {
             $this->$id = $callable($this->$id, $this);
