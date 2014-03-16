@@ -69,9 +69,6 @@ class Castel
      */
     public function extend($id, Closure $callable)
     {
-        if (property_exists($this, $id)) {
-            return $this->$id = $callable($this->$id, $this);
-        }
         if (!isset($this->values[$id])) {
             throw new InvalidArgumentException(sprintf('Identifier "%s" is undefined.', $id));
         }
@@ -79,6 +76,9 @@ class Castel
         $this->values[$id] = function ($that) use ($callable, $parent) {
             return $callable($this->mutate($parent), $that);
         };
+        if (property_exists($this, $id)) {
+            $this->$id = $callable($this->$id, $this);
+        }
         return $this;
     }
 
