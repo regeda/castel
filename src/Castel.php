@@ -73,8 +73,11 @@ class Castel
             throw new InvalidArgumentException(sprintf('Identifier "%s" is undefined.', $id));
         }
         $parent = $this->values[$id];
-        $this->values[$id] = function ($that) use ($callable, $parent) {
-            return $callable(self::mutate($parent, $that), $that);
+        $this->values[$id] = function ($c) use ($callable, $parent) {
+            if (is_callable($parent)) {
+                $parent = $parent($c);
+            }
+            return $callable($parent, $c);
         };
         if (property_exists($this, $id)) {
             $this->$id = $callable($this->$id, $this);
@@ -94,20 +97,10 @@ class Castel
         if (!isset($this->values[$id])) {
             throw new InvalidArgumentException(sprintf('Identifier "%s" is undefined.', $id));
         }
-        return $this->$id = self::mutate($this->values[$id], $this);
-    }
-
-    /**
-     * Tries to invoke a value
-     *
-     * @param mixed $value
-     * @return mixed
-     */
-    public static function &mutate(&$value, $context)
-    {
+        $value = &$this->values[$id];
         if (is_callable($value)) {
-            $value = $value($context);
+            $value = $value($this);
         }
-        return $value;
+        return $this->$id = $value;
     }
 }
