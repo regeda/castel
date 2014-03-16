@@ -1,4 +1,4 @@
 castel
 ======
 
-Castel is the fastest service container for PHP 5.4
+Castel is a fast Dependency Injection Container for PHP 5.3
