@@ -1,4 +1,4 @@
-castel
+Castel
 ======
 
 Castel is a fast Dependency Injection Container. The class for PHP 5.3 consists of just one file.

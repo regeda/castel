@@ -40,7 +40,7 @@ class CastelTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Identifier "foo" is already mutated
+     * @expectedExceptionMessage Identifier "foo" is frozen
      */
     public function testFailedSharingAfterMutation()
     {

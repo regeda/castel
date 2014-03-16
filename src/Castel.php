@@ -53,7 +53,7 @@ class Castel
     public function share($id, $value)
     {
         if (property_exists($this, $id)) {
-            throw new InvalidArgumentException(sprintf('Identifier "%s" is already mutated', $id));
+            throw new InvalidArgumentException(sprintf('Identifier "%s" is frozen', $id));
         }
         $this->values[$id] = $value;
         return $this;
