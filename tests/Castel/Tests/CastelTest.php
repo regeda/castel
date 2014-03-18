@@ -130,4 +130,41 @@ class CastelTest extends \PHPUnit_Framework_TestCase
         });
         $this->assertSame('To be or not to be!', $castel->foo);
     }
+
+    public function testProtect()
+    {
+        $castel = new Castel();
+        $castel->protect('foo', function () {
+            return 'bar';
+        });
+
+        $this->assertInstanceOf('Closure', $castel->foo);
+        $this->assertSame('bar', call_user_func($castel->foo));
+    }
+
+    public function testIssetBeforeMutation()
+    {
+        $castel = new Castel();
+        $castel->share('foo', 'bar');
+        $this->assertFalse(isset($castel->foo));
+    }
+
+    public function testIssetAfterMutation()
+    {
+        $castel = new Castel();
+        $castel->share('foo', 'bar');
+        $castel->foo; // <---- mutation
+        $this->assertTrue(isset($castel->foo));
+    }
+
+    public function testInvokeAfterUnset()
+    {
+        $castel = new Castel();
+        $castel->share('foo', function () {
+            return uniqid();
+        });
+        $uniqid = $castel->foo;
+        unset($castel->foo);
+        $this->assertNotSame($uniqid, $castel->foo);
+    }
 }

@@ -33,7 +33,7 @@ class Castel
     private $values;
 
     /**
-     * Instantiate the container
+     * Instantiate the container.
      *
      * @param array $values
      */
@@ -43,7 +43,7 @@ class Castel
     }
 
     /**
-     * Sets a parameter or an object
+     * Sets a parameter or an object.
      *
      * @param string $id
      * @param mixed $value
@@ -60,7 +60,21 @@ class Castel
     }
 
     /**
-     * Extends an object definition
+     * Protects a callable from being interpreted as a service.
+     *
+     * @param string $id
+     * @param Closure $callable
+     * @return \Castel
+     */
+    public function protect($id, Closure $callable)
+    {
+        return $this->share($id, function () use ($callable) {
+            return $callable;
+        });
+    }
+
+    /**
+     * Extends an object definition.
      *
      * @param string $id
      * @param Closure $callable
@@ -86,7 +100,7 @@ class Castel
     }
 
     /**
-     * Gets a parameter or an object
+     * Gets a parameter or an object.
      *
      * @param string $id
      * @return mixed
@@ -97,7 +111,7 @@ class Castel
         if (!isset($this->values[$id])) {
             throw new InvalidArgumentException(sprintf('Identifier "%s" is undefined.', $id));
         }
-        $value = &$this->values[$id];
+        $value = $this->values[$id];
         if (is_callable($value)) {
             $value = $value($this);
         }
