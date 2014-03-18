@@ -60,20 +60,6 @@ class Castel
     }
 
     /**
-     * Protects a callable from being interpreted as a service.
-     *
-     * @param string $id
-     * @param Closure $callable
-     * @return \Castel
-     */
-    public function protect($id, Closure $callable)
-    {
-        return $this->share($id, function () use ($callable) {
-            return $callable;
-        });
-    }
-
-    /**
      * Extends an object definition.
      *
      * @param string $id
