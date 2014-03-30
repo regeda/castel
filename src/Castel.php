@@ -74,10 +74,8 @@ class Castel
         }
         $parent = $this->values[$id];
         $this->values[$id] = function ($c) use ($callable, $parent) {
-            if (is_callable($parent)) {
-                $parent = $parent($c);
-            }
-            return $callable($parent, $c);
+            $isFactory = is_object($parent) && method_exists($parent, '__invoke');
+            return $callable($isFactory ? $parent($c) : $parent, $c);
         };
         if (property_exists($this, $id)) {
             $this->$id = $callable($this->$id, $this);
@@ -98,9 +96,7 @@ class Castel
             throw new InvalidArgumentException(sprintf('Identifier "%s" is undefined.', $id));
         }
         $value = $this->values[$id];
-        if (is_callable($value)) {
-            $value = $value($this);
-        }
-        return $this->$id = $value;
+        $isFactory = is_object($value) && method_exists($value, '__invoke');
+        return $this->$id = $isFactory ? $value($this) : $value;
     }
 }
