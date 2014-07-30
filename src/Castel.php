@@ -74,13 +74,24 @@ class Castel
         }
         $parent = $this->values[$id];
         $this->values[$id] = function ($c) use ($callable, $parent) {
-            $isFactory = is_object($parent) && method_exists($parent, '__invoke');
-            return $callable($isFactory ? $parent($c) : $parent, $c);
+            return $callable(self::fabricate($parent, $c), $c);
         };
         if (property_exists($this, $id)) {
             $this->$id = $callable($this->$id, $this);
         }
         return $this;
+    }
+
+    /**
+     * Invokes a callable or returns the value "as is".
+     *
+     * @param mixed $value
+     * @param mixed $context
+     * @return mixed
+     */
+    public static function fabricate($value, $context)
+    {
+        return is_object($value) && method_exists($value, '__invoke') ? $value($context) : $value;
     }
 
     /**
@@ -90,13 +101,23 @@ class Castel
      * @return mixed
      * @throws InvalidArgumentException
      */
-    public function __get($id)
+    public function getValue($id)
     {
         if (!isset($this->values[$id])) {
             throw new InvalidArgumentException(sprintf('Identifier "%s" is undefined.', $id));
         }
-        $value = $this->values[$id];
-        $isFactory = is_object($value) && method_exists($value, '__invoke');
-        return $this->$id = $isFactory ? $value($this) : $value;
+        return self::fabricate($this->values[$id], $this);
+    }
+
+    /**
+     * Gets a parameter or an object after caching it.
+     *
+     * @param string $id
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
+    public function __get($id)
+    {
+        return $this->$id = $this->getValue($id);
     }
 }

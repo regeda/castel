@@ -59,7 +59,7 @@ $container->share('mail', function () {
     return new \Zend_Mail();
 });
 $container->extend('mail', function ($mail, $container) {
-    $mail->setFrom($container['mail.default_from']);
+    $mail->setFrom($container->getValue('mail.default_from'));
     return $mail;
 });
 ```
