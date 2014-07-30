@@ -74,7 +74,7 @@ class Castel
         }
         $parent = $this->values[$id];
         $this->values[$id] = function ($c) use ($callable, $parent) {
-            return $callable(self::fabricate($parent, $c), $c);
+            return $callable(Castel::fabricate($parent, $c), $c);
         };
         if (property_exists($this, $id)) {
             $this->$id = $callable($this->$id, $this);
